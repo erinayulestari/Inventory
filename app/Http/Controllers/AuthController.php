@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use App\Http\Controllers\Api\BaseController;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
     public function register(Request $req)
     {
@@ -21,19 +21,18 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            // role default user
         ]);
 
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json([
-            'status' => 'success',
-            'data' => [
+        return $this->success(
+            [
                 'user' => $user,
-                'token' => $token
+                'token' => $token,
             ],
-            'message' => 'User registered'
-        ], 201);
+            'User registered',
+            201
+        );
     }
 
     public function login(Request $req)
@@ -46,23 +45,33 @@ class AuthController extends Controller
         $user = User::where('email', $req->email)->first();
 
         if (!$user || !Hash::check($req->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.']
-            ]);
+            return $this->error(
+                'The provided credentials are incorrect.',
+                401
+            );
         }
 
-        // hapus token lama
+        // Hapus token lama
         $user->tokens()->delete();
 
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json([
-            'status' => 'success',
-            'data' => [
+        return $this->success(
+            [
                 'user' => $user,
-                'token' => $token
+                'token' => $token,
             ],
-            'message' => 'User logged in'
-        ]);
+            'User logged in'
+        );
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return $this->success(
+            null,
+            'User logged out'
+        );
     }
 }
