@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ItemService {
     public function all(?int $categoryId = null): Collection
-    {
+{
     $query = Item::with('category');
 
-    if ($categoryId) {
+    if (!is_null($categoryId) && $categoryId !== '') {
         $query->where('category_id', $categoryId);
     }
 
     return $query->get();
-    }
+}
 
     public function find(int $id): Item{
         return Item::with('category')->findOrFail($id); 
