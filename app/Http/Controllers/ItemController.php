@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateItemRequest;
 use App\Services\ItemService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ItemController extends BaseController
 {
@@ -18,13 +19,15 @@ class ItemController extends BaseController
         $this->svc = $svc;
     }
 
-    public function index(): JsonResponse
-    {
-        return $this->success(
-            $this->svc->all(),
-            'Berhasil menarik semua data Item'
-        );
-    }
+    public function index(Request $request): JsonResponse
+{
+    return $this->success(
+        $this->svc->all(
+            $request->query('category_id')
+        ),
+        'Berhasil menarik semua data Item'
+    );
+}
 
     public function store(StoreItemRequest $req): JsonResponse
     {

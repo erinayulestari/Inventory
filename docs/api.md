@@ -117,31 +117,38 @@ Admin Only
 
 GET /items
 
-### Create Item
+### Get Items By Category
 
-POST /items
+GET /items?category_id={id}
 
-Body:
+Contoh:
+
+GET /items?category_id=2
+
+Response:
 
 ```json
 {
-  "name": "Laptop",
-  "quantity": 10,
-  "price": 8500000,
-  "category_id": 1
+  "success": true,
+  "message": "Berhasil menarik semua data Item",
+  "data": [
+    {
+      "id": 1,
+      "name": "Laptop",
+      "quantity": 10,
+      "price": 8500000,
+      "category_id": 2
+    }
+  ]
 }
 ```
 
-### Get Item By ID
+Jika kategori tidak memiliki item:
 
-GET /items/{id}
-
-### Update Item
-
-PUT /items/{id}
-
-### Delete Item
-
-DELETE /items/{id}
-
-Admin Only
+```json
+{
+  "success": true,
+  "message": "Berhasil menarik semua data Item",
+  "data": []
+}
+```
